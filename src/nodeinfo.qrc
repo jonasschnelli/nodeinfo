@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>fonts/crypto-thin.ttf</file>
+        <file>fonts/metafora-bold.ttf</file>
+        <file>fonts/metafora-thin.ttf</file>
+        <file>fonts/crypto-bold.ttf</file>
+    </qresource>
+</RCC>
