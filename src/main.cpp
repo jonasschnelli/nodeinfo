@@ -1,3 +1,7 @@
+// Copyright (c) 2019 Jonas Schnelli
+// Distributed under the MIT software license, see the accompanying
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+
 #include <QApplication>
 #include <QDebug>
 #include <QMainWindow>
@@ -6,7 +10,7 @@
 #include <QFontDatabase>
 #include <QProcessEnvironment>
 
-#include "stats.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[]) {
     // create application, main window
@@ -14,7 +18,7 @@ int main(int argc, char *argv[]) {
     StatsMainWindow mainWindow;
 
     if (QProcessEnvironment::systemEnvironment().value("WINDOWED", "") == "1") {
-        mainWindow.setFixedSize(1000,500);
+        mainWindow.setMinimumSize(1000,500);
         mainWindow.show();
     }
     else {

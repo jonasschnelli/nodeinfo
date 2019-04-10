@@ -12,11 +12,30 @@ QT_QRC = src/nodeinfo.qrc
 QT_QRC_LOCALE_CPP = qt/qrc_bitcoin_locale.cpp
 QT_QRC_LOCALE = qt/bitcoin_locale.qrc
 
-nodeinfo_SOURCES = $(QT_QRC_CPP) src/moc_stats.cpp src/stats.h src/stats.cpp src/main.cpp
+QT_H = \
+  src/updater.h \
+  src/datadrawer.h \
+  src/utils.h
+
+QT_CPP = \
+  src/updater.cpp \
+  src/datadrawer.cpp \
+  src/main.cpp \
+  src/mainwindow.cpp \
+  src/utils.cpp
+
+QT_MOC_CPP = \
+  src/moc_mainwindow.cpp \
+  src/moc_datadrawer.cpp \
+  src/moc_updater.cpp
+ 
+nodeinfo_SOURCES = $(QT_QRC_CPP) $(QT_MOC_CPP) $(QT_H) $(QT_CPP)
 nodeinfo_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_QT_INCLUDES) $(QT_INCLUDES) $(QT_DBUS_INCLUDES)
 nodeinfo_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
 nodeinfo_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 nodeinfo_LDADD = $(QT_LIBS) $(QT_DBUS_LIBS)
+
+CLEANFILES = $(QT_MOC_CPP) $(QT_MOC)
 
 $(QT_QRC_CPP): $(QT_QRC)
 	@test -f $(RCC)
