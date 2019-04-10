@@ -7,7 +7,7 @@
 #include <QDebug>
 #include <QThread>
 #include <QProcess>
-
+#include <QFile>
 #include <QTimer>
 #include <QDateTime>
 
@@ -22,7 +22,7 @@ bool DataUpdater::getBitcoinRPC(const QString &cmd, QVariantMap &mapOut) {
     //qDebug() << "executing:" << call << endl;
     QProcess process;
     process.start(call);
-    process.waitForFinished(10000);
+    process.waitForFinished(QProcessEnvironment::systemEnvironment().value("BITCOIN_RPC_TIMEOUT", "10000").toInt());
     QString stdout = process.readAllStandardOutput();
     QJsonDocument doc = QJsonDocument::fromJson(stdout.toUtf8());
     QJsonObject jObject = doc.object();
@@ -55,7 +55,7 @@ void DataUpdater::startUpdate() {
             bbhash = map["bestblockhash"].toString();
             m_bitcoin_IBD = map["initialblockdownload"].toBool();
             m_bitcoin_verification_progress = map["verificationprogress"].toFloat();
-            if (m_bitcoin_verification_progress) {
+            if (m_bitcoin_IBD) {
                 // during IBD, update every 5 seconds
                 // don't stress bitcoind too much
                 next_update = 5000;
@@ -64,7 +64,9 @@ void DataUpdater::startUpdate() {
         ml.unlock();
         Q_EMIT resultReady();
 
-        if (!m_bitcoin_verification_progress) {
+        if (!m_bitcoin_IBD && m_last_bestblock != bbhash) {
+            m_last_bestblock = bbhash;
+            qDebug() << "load blocks" << endl;
             QList<QVariantMap> bitcoin_blocks;
             {
                 // fetch and store last 10 blocks
@@ -85,6 +87,30 @@ void DataUpdater::startUpdate() {
         m_connection_bitcoin_established = false;
         m_updater_try = true;
     }
+
+    // read exchangerate file
+    QFile f(QProcessEnvironment::systemEnvironment().value("NODE_INFO_EXCHANGE_RATE_FILE", "exchangerate"));
+    if (f.open(QFile::ReadOnly | QFile::Text)) {
+        QTextStream in(&f);
+        {
+            QMutexLocker ml(&m_mutex);
+            QString data_raw = in.readAll();
+            QStringList data_list = data_raw.split(',');
+            m_exchange_rate = 0;
+            m_exchange_rate_currency_overwrite.clear();
+            m_exchange_rate_title_overwrite.clear();
+            if (data_list.size() >= 1) {
+                m_exchange_rate = data_list[0].toFloat();
+            }
+            if (data_list.size() >= 2) {
+                m_exchange_rate_currency_overwrite = data_list[1];
+            }
+            if (data_list.size() >= 3) {
+                m_exchange_rate_title_overwrite = data_list[2];
+            }
+        }
+    }
+
     // signal that the data is ready
     Q_EMIT resultReady();
     if (QThread::currentThread()->isInterruptionRequested()) {

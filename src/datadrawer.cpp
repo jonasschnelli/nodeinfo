@@ -106,25 +106,38 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
     }
 
     // draw info
+    int cur_y = window_border;
     QString key_text = "Blocks";
     int key_width = m_font_bold_m.width(key_text);
     int key_height = m_font_bold_m.height()-20;
-
+    cur_y+=key_height;
     painter.setFont(m_font_bold);
-    painter.drawText(window_border,window_border+key_height, key_text);
+    painter.drawText(window_border,cur_y, key_text);
     painter.setFont(m_font_thin);
-    painter.drawText(window_border+key_width+x_margin,window_border+key_height, QString::number(m_updater->m_bitcoin_height));
+    painter.drawText(window_border+key_width+x_margin,cur_y, QString::number(m_updater->m_bitcoin_height));
 
     if (m_updater->m_bitcoin_IBD) {
+        cur_y += m_font_thin_blocks_m.height();
         QString key_text = "Synchronizing... "+QString::number(m_updater->m_bitcoin_verification_progress*100, 'f', 2)+"%";
         painter.setFont(m_font_thin_blocks);
-        painter.drawText(window_border,window_border+key_height+m_font_thin_blocks_m.height(), key_text);
+        painter.drawText(window_border,cur_y, key_text);
+    }
+
+    cur_y+=key_height*1.5;
+
+    if (m_updater->m_exchange_rate != 0) {
+        key_text = m_updater->m_exchange_rate_title_overwrite.isEmpty() ? "BTC/" + (m_updater->m_exchange_rate_currency_overwrite.isEmpty() ? "USD" : m_updater->m_exchange_rate_currency_overwrite) : m_updater->m_exchange_rate_title_overwrite;
+        key_width = m_font_bold_m.width(key_text);
+        painter.setFont(m_font_bold);
+        painter.drawText(window_border,cur_y, key_text);
+        painter.setFont(m_font_thin);
+        painter.drawText(window_border+key_width+x_margin,cur_y, QString::number(m_updater->m_exchange_rate));
     }
 
     // draw best blocks
     int cur_height = m_font_bold_blocks_title_m.height();
     int cur_x = width-window_border;
-    int cur_y = window_border+cur_height;
+    cur_y = window_border+cur_height;
     int blocks_x_margin = 5;
     int sumcols = 0;
     for(int i = cols.size()-1; i >= 0; i--) { sumcols += cols[i]; }

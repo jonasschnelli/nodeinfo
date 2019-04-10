@@ -8,6 +8,8 @@
 #include <QPainter>
 #include <QFont>
 #include <QWidget>
+#include <QEvent>
+#include <QKeyEvent>
 
 #include <memory>
 
