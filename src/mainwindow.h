@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QMainWindow>
 #include <QThread>
+#include <QTimer>
 
 class StatsMainWindow : public QMainWindow {
     Q_OBJECT;
@@ -19,5 +20,6 @@ private:
     std::shared_ptr<DataUpdater> m_updater;
     QThread m_updater_thread;
     bool eventFilter(QObject *object, QEvent *event);
+    QTimer *m_unblank_timer;
 };
 
