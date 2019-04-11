@@ -78,7 +78,7 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
     int width = painter.device()->width();
     int height = painter.device()->height();
     const int x_margin = 20;
-    const int window_border = 10;
+    const int window_border = 50;
     QDateTime now = QDateTime::currentDateTime();
 
     // paint background
