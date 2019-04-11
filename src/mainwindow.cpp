@@ -10,6 +10,7 @@
 #include <QApplication>
 
 #ifdef __linux__
+#include <unistd.h> // ::close()
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <linux/fb.h>
