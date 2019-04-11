@@ -13,6 +13,7 @@
 #include <QProcess>
 #include <QTimer>
 #include <QDateTime>
+#include <QLinearGradient>
 
 static const QList<int> cols { 140, 130, 80, 150, 150};
 static const QList<QString> cols_hdr { "Height", "Hash", "Txns", "Size", "Age"};
@@ -79,6 +80,12 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
     const int x_margin = 20;
     const int window_border = 10;
     QDateTime now = QDateTime::currentDateTime();
+
+    // paint background
+    QLinearGradient gradient(0,0,0,height); // diagonal gradient from top-left to bottom-right
+    gradient.setColorAt(0, QColor(255,255,255));
+    gradient.setColorAt(1, QColor(225,225,225));
+    painter.fillRect(0, 0, width, height, gradient);
 
     // paint global info
     painter.setFont(m_font_thin_footer);
