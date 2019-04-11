@@ -66,7 +66,6 @@ void DataUpdater::startUpdate() {
 
         if (!m_bitcoin_IBD && m_last_bestblock != bbhash) {
             m_last_bestblock = bbhash;
-            qDebug() << "load blocks" << endl;
             QList<QVariantMap> bitcoin_blocks;
             {
                 // fetch and store last 10 blocks
