@@ -31,6 +31,7 @@ StatsMainWindow::StatsMainWindow() : m_unblank_timer(nullptr) {
         connect(m_unblank_timer, &QTimer::timeout, [=]() {
             int fd = open("/dev/fb0", O_RDWR, 0);
             ioctl(fd, FBIOBLANK, VESA_NO_BLANKING);
+            ::close(fd); // use :: to not conflict with the Qt QWidget::close()
           } );
         m_unblank_timer->start();
     }
