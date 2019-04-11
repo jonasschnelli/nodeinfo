@@ -3,7 +3,7 @@
 Simple QT fullscreen app compatible with linuxfb (direct framebuffer) that displays information about a Bitcoin Node
 
 
-#### Compile
+### Compile
 
 Debian / Ubuntu
 
@@ -23,7 +23,7 @@ OSX
     make
 
 
-#### Run
+### Run
 
 X11/OSX
 
@@ -37,7 +37,7 @@ Mainnet custom Datadir Linux Without X11 direct framebuffer
 
     BITCOIN_ARGS="-datadir=/btc/data/bitcoin" BITCOIN_CLI=/btc/apps/bitcoin-0.18.0rc3/bin/bitcoin-cli ./nodeinfo -platform linuxfb
 
-##### Configuration Options
+#### Configuration Options
 
 Show BTC exchange rate:
 
@@ -53,3 +53,8 @@ Environment Variables
 * `BITCOIN_RPC_TIMEOUT` the shell-pipe call timeout
 * `NODE_INFO_EXCHANGE_RATE_FILE` path to the exchangerate file
 * `WINDOWED` if set to `1`, nodeinfo will run in a window (not compatible with the `linuxfd` platform)
+
+
+### Screenshots
+
+![screenshot](https://raw.githubusercontent.com/jonasschnelli/nodeinfo/master/docs/screenshot.png)
