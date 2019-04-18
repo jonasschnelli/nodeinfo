@@ -68,7 +68,6 @@ void DataDrawerWidget::drawCenterText(QPainter *painter, const QString &text) {
     int width = painter->device()->width();
     int height = painter->device()->height();
     int key_width = m_font_bold_blocks_m.width(text);
-    int key_height = m_font_bold_blocks_m.height();
     painter->setFont(m_font_bold_blocks);
     painter->drawText((width-key_width)/2,(height)/2, text);
 }
@@ -106,7 +105,6 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
         // draw disconnected
         QString disconnected_text = "Disconnected";
         int key_width = m_font_bold_m.width(disconnected_text);
-        int key_height = m_font_bold_m.height();
         painter.setFont(m_font_bold);
         painter.drawText((width-key_width)/2,(height)/2, disconnected_text);
         return;
@@ -145,7 +143,6 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
     int cur_height = m_font_bold_blocks_title_m.height();
     int cur_x = width-window_border;
     cur_y = window_border+cur_height;
-    int blocks_x_margin = 5;
     int sumcols = 0;
     for(int i = cols.size()-1; i >= 0; i--) { sumcols += cols[i]; }
 
@@ -191,6 +188,60 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
                 cur_y += cur_height;
             }
         }
+    } // end latest blocks
+
+    if (m_updater->m_bitcoin_blocks.size() > 0) {
+        // draw peer info
+        static const int max_inbound = 125;
+        static const int max_outbound = 8;
+        int bar_height = 100;
+        int bar_width = 20;
+        int x_dist = 100;
+        cur_y += 40;
+        int peer_y = cur_y;
+        QColor colorA(142, 79, 163);
+        QColor colorB(78, 113, 162);
+
+        cur_x = width-window_border;
+        painter.setFont(m_font_bold_blocks_title);
+        cur_height = m_font_bold_blocks_title_m.height();
+        painter.drawText(cur_x-sumcols,cur_y, "Connected Peers");
+        cur_y += cur_height;
+
+        painter.setFont(m_font_bold_blocks);
+        painter.fillRect(cur_x-sumcols,cur_y, m_font_bold_blocks_m.height()/2, -m_font_bold_blocks_m.height()/2, colorA);
+        painter.drawText(cur_x-sumcols+m_font_bold_blocks_m.height()/2+5,cur_y,"Inbound");
+        painter.fillRect(cur_x-sumcols+x_dist,cur_y, m_font_bold_blocks_m.height()/2, -m_font_bold_blocks_m.height()/2, colorB);
+        painter.drawText(cur_x-sumcols+x_dist+m_font_bold_blocks_m.height()/2+5,cur_y,"Outbound");
+        cur_y+=20;
+
+        painter.setFont(m_font_thin_blocks);
+        painter.drawText(cur_x-sumcols,cur_y, QString::number(m_updater->m_bitcoin_peer_inbound)+"/"+QString::number(max_inbound));
+        painter.drawText(cur_x-sumcols+x_dist,cur_y, QString::number(m_updater->m_bitcoin_peer_outbound)+"/"+QString::number(max_outbound));
+        cur_y+=10;
+        painter.drawRect(cur_x-sumcols,cur_y, bar_width,bar_height);
+        painter.fillRect(cur_x-sumcols,cur_y+bar_height, bar_width,-1.0*bar_height/max_inbound*m_updater->m_bitcoin_peer_inbound, Qt::black);
+        painter.drawRect(cur_x-sumcols+x_dist,cur_y, bar_width,bar_height);
+        painter.fillRect(cur_x-sumcols+x_dist,cur_y+bar_height, bar_width,-1.0*bar_height/max_outbound*m_updater->m_bitcoin_peer_outbound, Qt::black);
+
+        painter.setPen(colorA);
+        painter.setBrush(colorA);
+        painter.drawPie(cur_x-sumcols+x_dist*2+bar_width, cur_y, bar_height, bar_height, 0,-(360*16.0/(m_updater->m_bitcoin_peer_outbound+m_updater->m_bitcoin_peer_inbound) * m_updater->m_bitcoin_peer_inbound));
+
+        painter.setPen(colorB);
+        painter.setBrush(colorB);
+        painter.drawPie(cur_x-sumcols+x_dist*2+bar_width, cur_y, bar_height, bar_height, 0,360*16.0/(m_updater->m_bitcoin_peer_outbound+m_updater->m_bitcoin_peer_inbound) * m_updater->m_bitcoin_peer_outbound);
+
+        painter.setPen(Qt::black);
+        painter.setBrush(Qt::black);
+
+        // draw mempool
+        cur_y = peer_y;
+        painter.setFont(m_font_bold_blocks_title);
+        painter.drawText(cur_x-sumcols+(cols[0]+cols[1]+cols[2]),cur_y, "Mempool");
+        cur_y+=cur_height;
+        painter.setFont(m_font_thin_blocks);
+        painter.drawText(cur_x-sumcols+(cols[0]+cols[1]+cols[2]),cur_y, QString::number(m_updater->m_bitcoin_mempool_count)+" Transactions");
     }
 }
 
