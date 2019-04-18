@@ -79,12 +79,7 @@ if test "x$enable_debug" = xyes; then
   if test "x$CXXFLAGS_overridden" = xno; then
 	CXXFLAGS=""
   fi
-  # Prefer -Og, fall back to -O0 if that is unavailable.
-  AX_CHECK_COMPILE_FLAG(
-    [-Og],
-    [[DEBUG_CXXFLAGS="$DEBUG_CXXFLAGS -Og"]],
-    [AX_CHECK_COMPILE_FLAG([-O0],[[DEBUG_CXXFLAGS="$DEBUG_CXXFLAGS -O0"]],,[[$CXXFLAG_WERROR]])],
-    [[$CXXFLAG_WERROR]])
+  AX_CHECK_COMPILE_FLAG([-O0],[[DEBUG_CXXFLAGS="$DEBUG_CXXFLAGS -O0"]],,[[$CXXFLAG_WERROR]])
 
   # Prefer -g3, fall back to -g if that is unavailable.
   AX_CHECK_COMPILE_FLAG(
@@ -479,5 +474,11 @@ AC_CONFIG_FILES([Makefile])
 
 AC_OUTPUT
 
-echo "done"
+echo "  CC            = $CC"
+echo "  CFLAGS        = $CFLAGS"
+echo "  CPPFLAGS      = $DEBUG_CPPFLAGS $HARDENED_CPPFLAGS $CPPFLAGS"
+echo "  CXX           = $CXX"
+echo "  CXXFLAGS      = $DEBUG_CXXFLAGS $HARDENED_CXXFLAGS $WARN_CXXFLAGS $NOWARN_CXXFLAGS $ERROR_CXXFLAGS $GPROF_CXXFLAGS $CXXFLAGS"
+echo "  LDFLAGS       = $PTHREAD_CFLAGS $HARDENED_LDFLAGS $GPROF_LDFLAGS $LDFLAGS"
+echo "  ARFLAGS       = $ARFLAGS"
 echo
