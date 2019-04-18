@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
     StatsMainWindow mainWindow;
 
     if (QProcessEnvironment::systemEnvironment().value("WINDOWED", "") == "1") {
-        mainWindow.setMinimumSize(1280,580);
+        mainWindow.setMinimumSize(1344,756); // FullHD*0.7
         mainWindow.show();
     }
     else {
