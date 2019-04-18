@@ -13,27 +13,40 @@
 
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 
-bool DataUpdater::getBitcoinRPC(const QString &cmd, QVariantMap &mapOut) {
+QString callBitcoinRPC(const QString &cmd) {
     // call bitcoin-cli
     QString bitcoin_cli = QProcessEnvironment::systemEnvironment().value("BITCOIN_CLI", "bitcoin-cli");
     QString bitcoin_args = QProcessEnvironment::systemEnvironment().value("BITCOIN_ARGS", "-regtest");
     QString call = bitcoin_cli + " " + bitcoin_args + " " + cmd;
-    //qDebug() << "executing:" << call << endl;
+    qDebug() << "executing:" << call << endl;
     QProcess process;
     process.start(call);
     process.waitForFinished(QProcessEnvironment::systemEnvironment().value("BITCOIN_RPC_TIMEOUT", "10000").toInt());
-    QString stdout = process.readAllStandardOutput();
-    QJsonDocument doc = QJsonDocument::fromJson(stdout.toUtf8());
+    return process.readAllStandardOutput();
+}
+bool DataUpdater::getBitcoinRPC(const QString &cmd, QVariantMap &mapOut) {
+    QJsonDocument doc = QJsonDocument::fromJson(callBitcoinRPC(cmd).toUtf8());
     QJsonObject jObject = doc.object();
     if (doc.isEmpty()) {
         qDebug() << "no json response" << endl;
         return false;
     }
-
     mapOut = jObject.toVariantMap();
     return true;
 }
+
+bool DataUpdater::getBitcoinRPC(const QString &cmd, QVariantList &list_out) {
+    QJsonDocument doc = QJsonDocument::fromJson(callBitcoinRPC(cmd).toUtf8());
+    if (doc.isEmpty()) {
+        qDebug() << "no json response" << endl;
+        return false;
+    }
+    list_out = doc.array().toVariantList();
+    return true;
+}
+
 void DataUpdater::startUpdate() {
     QVariantMap map;
     int next_update = 1000;
@@ -79,6 +92,26 @@ void DataUpdater::startUpdate() {
             m_bitcoin_blocks.clear();
             m_bitcoin_blocks = bitcoin_blocks;
         }
+
+        // get peerinfos
+        QVariantList list_res;
+        ml.unlock();
+        if (getBitcoinRPC("getpeerinfo", list_res)) {
+            ml.relock();
+            m_bitcoin_peer_inbound = 0;
+            m_bitcoin_peer_outbound = 0;
+            for (const QVariant &item : list_res) {
+                QVariantMap item_map = item.toMap();
+                item_map["inbound"].toBool() ? m_bitcoin_peer_inbound++ : m_bitcoin_peer_outbound++;
+            }
+        }
+
+        ml.unlock();
+        if (getBitcoinRPC("getmempoolinfo", map)) {
+            ml.relock();
+            m_bitcoin_mempool_count = map["size"].toLongLong();
+        }
+
         m_updater_try = true;
     }
     else {

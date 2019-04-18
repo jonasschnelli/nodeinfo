@@ -12,6 +12,7 @@ class DataUpdater : public QObject
 
 private:
     bool getBitcoinRPC(const QString &cmd, QVariantMap &mapOut);
+    bool getBitcoinRPC(const QString &cmd, QVariantList &list_out);
 public:
     DataUpdater() {
         m_bitcoin_height = -1;
@@ -22,6 +23,9 @@ public:
         m_exchange_rate = 0.0;
         m_exchange_rate_title_overwrite.clear();
         m_exchange_rate_currency_overwrite.clear();
+        m_bitcoin_peer_inbound = 0;
+        m_bitcoin_peer_outbound = 0;
+        m_bitcoin_mempool_count = 0;
     }
     QMutex m_mutex;
 
@@ -30,6 +34,9 @@ public:
     bool m_updater_try;
     int m_bitcoin_height;
     QList<QVariantMap> m_bitcoin_blocks;
+    int m_bitcoin_peer_inbound;
+    int m_bitcoin_peer_outbound;
+    uint64_t m_bitcoin_mempool_count;
     bool m_bitcoin_IBD;
     float m_bitcoin_verification_progress;
 
