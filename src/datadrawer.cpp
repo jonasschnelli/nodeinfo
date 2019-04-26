@@ -192,11 +192,8 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
 
     if (m_updater->m_bitcoin_blocks.size() > 0) {
         // draw peer info
-        static const int max_inbound = 125;
-        static const int max_outbound = 8;
-        int bar_height = 100;
-        int bar_width = 20;
-        int x_dist = 100;
+        int pie_height = 100;
+        int x_dist = 120;
         cur_y += 40;
         int peer_y = cur_y;
         QColor colorA(142, 79, 163);
@@ -216,21 +213,17 @@ void DataDrawerWidget::paintEvent(QPaintEvent *)
         cur_y+=20;
 
         painter.setFont(m_font_thin_blocks);
-        painter.drawText(cur_x-sumcols,cur_y, QString::number(m_updater->m_bitcoin_peer_inbound)+"/"+QString::number(max_inbound));
-        painter.drawText(cur_x-sumcols+x_dist,cur_y, QString::number(m_updater->m_bitcoin_peer_outbound)+"/"+QString::number(max_outbound));
+        painter.drawText(cur_x-sumcols,cur_y, QString::number(m_updater->m_bitcoin_peer_inbound));
+        painter.drawText(cur_x-sumcols+x_dist,cur_y, QString::number(m_updater->m_bitcoin_peer_outbound));
         cur_y+=10;
-        painter.drawRect(cur_x-sumcols,cur_y, bar_width,bar_height);
-        painter.fillRect(cur_x-sumcols,cur_y+bar_height, bar_width,-1.0*bar_height/max_inbound*m_updater->m_bitcoin_peer_inbound, Qt::black);
-        painter.drawRect(cur_x-sumcols+x_dist,cur_y, bar_width,bar_height);
-        painter.fillRect(cur_x-sumcols+x_dist,cur_y+bar_height, bar_width,-1.0*bar_height/max_outbound*m_updater->m_bitcoin_peer_outbound, Qt::black);
 
         painter.setPen(colorA);
         painter.setBrush(colorA);
-        painter.drawPie(cur_x-sumcols+x_dist*2+bar_width, cur_y, bar_height, bar_height, 0,-(360*16.0/(m_updater->m_bitcoin_peer_outbound+m_updater->m_bitcoin_peer_inbound) * m_updater->m_bitcoin_peer_inbound));
+        painter.drawPie(cur_x-sumcols, cur_y, pie_height, pie_height, 0,-(360*16.0/(m_updater->m_bitcoin_peer_outbound+m_updater->m_bitcoin_peer_inbound) * m_updater->m_bitcoin_peer_inbound));
 
         painter.setPen(colorB);
         painter.setBrush(colorB);
-        painter.drawPie(cur_x-sumcols+x_dist*2+bar_width, cur_y, bar_height, bar_height, 0,360*16.0/(m_updater->m_bitcoin_peer_outbound+m_updater->m_bitcoin_peer_inbound) * m_updater->m_bitcoin_peer_outbound);
+        painter.drawPie(cur_x-sumcols, cur_y, pie_height, pie_height, 0,360*16.0/(m_updater->m_bitcoin_peer_outbound+m_updater->m_bitcoin_peer_inbound) * m_updater->m_bitcoin_peer_outbound);
 
         painter.setPen(Qt::black);
         painter.setBrush(Qt::black);
