@@ -37,6 +37,8 @@ Mainnet custom Datadir Linux Without X11 direct framebuffer
 
     BITCOIN_ARGS="-datadir=/btc/data/bitcoin" BITCOIN_CLI=/btc/apps/bitcoin-0.18.0rc3/bin/bitcoin-cli ./nodeinfo -platform linuxfb
 
+** Make sure your user is in the group `tty` if you run with `-platform linuxfb` via SSH or other no direct tty ways.**
+
 #### Configuration Options
 
 Show BTC exchange rate:
